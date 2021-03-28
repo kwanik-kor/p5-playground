@@ -13,16 +13,66 @@
       }
     </style>
     <script src="../js/p5.min.js"></script>
+    <script src="../js/parallel.js"></script>
   </head>
   <body>
     <script>
+      // 최초 1회 Rendering
       function setup() {
         createCanvas(windowWidth, windowHeight);
-        // 그라데이션 색상
-        gradient_1 = color(0, 192, 255);
-        gradient_2 = color(255, 0, 234);
-        // 배경 색상 지정
-        setGradient(0, 0, width, height, gradient_1, gradient_2);
+        let y = windowHeight / 2;
+
+        parallels = new Parallel(
+          windowWidth,
+          windowHeight / 2,
+          windowHeight,
+          2.5
+        );
+      }
+
+      // window size 조절 시, canvas 크기 변경
+      function windowResized() {
+        resizeCanvas(windowWidth, windowHeight);
+      }
+
+      // 계속해서 Rendering
+      function draw() {
+        defaultSetup();
+        // 수평선 위 배경
+        // gradient_1 = color(27, 73, 150);
+        // gradient_2 = color(35, 25, 67);
+        // setGradient(0, 0, width, height / 2, gradient_2, gradient_1);
+
+        // 수평선
+        strokeWeight(1);
+        gradient_1 = color(33, 114, 255);
+        gradient_2 = color(255, 255, 255);
+        setGradient(
+          0,
+          windowHeight / 2 - 3,
+          windowWidth,
+          3,
+          gradient_1,
+          gradient_2
+        );
+        setGradient(
+          0,
+          windowHeight / 2,
+          windowWidth,
+          3,
+          gradient_2,
+          gradient_1
+        );
+
+        // 다가오는 수평선
+        parallels.move();
+      }
+
+      // Resize시에도 동일하게 Setup 하기 위한 Default Setting
+      function defaultSetup() {
+        fill(13, 3, 9);
+        rect(0, 0, windowWidth, windowHeight);
+
         // 소실점
         vanishing_point_X = windowWidth / 2;
         vanishing_point_Y = windowHeight / 3;
@@ -31,39 +81,16 @@
           pow(windowWidth - vanishing_point_X, 2) +
             pow(windowHeight - vanishing_point_Y, 2)
         );
-        for (let i = 0; i <= 180; i += 10) {
-          line(
-            vanishing_point_X,
-            vanishing_point_Y,
-            cos(degreeToRad(i)) * size + vanishing_point_X,
-            sin(degreeToRad(i)) * size + vanishing_point_Y
-          );
-          console.log("degree: ", i);
-          console.log("radian: ", degreeToRad(i));
-          console.log("cos : ", cos(degreeToRad(i)));
-          console.log("sin : ", sin(degreeToRad(i)));
+        strokeWeight(2.5);
+        stroke(164, 39, 172);
+        for (let i = windowWidth * -2; i <= windowWidth * 3; i += 200) {
+          line(vanishing_point_X, vanishing_point_Y, i, windowHeight);
         }
       }
 
       // Degree to Radian
       function degreeToRad(degree) {
         return (degree * Math.PI) / 180;
-      }
-
-      function draw() {
-        // 수평선
-        push();
-        noFill();
-        line(0, windowHeight / 2, windowWidth, windowHeight / 2);
-        pop();
-      }
-
-      // window size 조절 시, canvas 크기 변경
-      function windowResized() {
-        resizeCanvas(windowWidth, windowHeight);
-        vanishing_point_X = windowWidth / 2;
-        vanishing_point_Y = windowHeight / 3;
-        setGradient(0, 0, width, height, gradient_1, gradient_2);
       }
 
       // Gradient Color Setup(Y)
